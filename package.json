@@ -1,0 +1,17 @@
+{
+  "name": "battery-status",
+  "version": "1.0.0",
+  "description": "Battery checker daemon for macOS",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "macOS",
+    "battery",
+    "checker",
+    "daemon"
+  ],
+  "author": "João Carmo",
+  "license": "MIT"
+}
