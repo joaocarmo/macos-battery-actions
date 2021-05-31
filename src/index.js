@@ -3,11 +3,14 @@ const { promisify } = require('util')
 const exec = promisify(require('child_process').exec)
 
 // Settings
-FIRST_THRESHOLD = 0.5
-SECOND_THRESHOLD = 0.4
+const FIRST_THRESHOLD = 0.5
+const SECOND_THRESHOLD = 0.4
+const ALERT_TITLE = 'Battery Status'
+const ALERT_MESSAGE = 'Please consider pluggin in to power !'
 
 const getSystemProfile = async () => {
-  const shellCommand = 'system_profiler SPPowerDataType | grep -A3 "Charge Remaining"'
+  const shellCommand =
+    'system_profiler SPPowerDataType | grep -A3 "Charge Remaining"'
   const { stdout } = await exec(shellCommand)
   return stdout
 }
@@ -60,7 +63,11 @@ const parseOutput = (inputStr) => {
   return parsed
 }
 
-const sendAlert = () => console.log('Alert!')
+const sendAlert = async (message = ALERT_MESSAGE, title = ALERT_TITLE) => {
+  const shellCommand =
+    `osascript -e 'display notification "${message}" with title "${title}"'`
+    await exec(shellCommand)
+}
 
 const hibernate = () => console.log('Hibernate!')
 
