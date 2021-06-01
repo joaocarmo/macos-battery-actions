@@ -6,7 +6,10 @@ const exec = promisify(require('child_process').exec)
 const FIRST_THRESHOLD = 0.5
 const SECOND_THRESHOLD = 0.4
 const ALERT_TITLE = 'Battery Status'
-const ALERT_MESSAGE = 'Please consider pluggin in to power !'
+const ALERT_MESSAGE = 'Please consider pluggin in to power!'
+const DIALOG_MESSAGE = 'Your battery is at a critical level! Sleep?'
+const DIALOG_NO = 'No'
+const DIALOG_YES = 'Yes'
 
 const getSystemProfile = async () => {
   const shellCommand =
@@ -69,7 +72,36 @@ const sendAlert = async (message = ALERT_MESSAGE, title = ALERT_TITLE) => {
     await exec(shellCommand)
 }
 
-const hibernate = () => console.log('Hibernate!')
+const macDialog = async (message = DIALOG_MESSAGE) => {
+  const appleScript = `\
+display alert "${message}" buttons {"${DIALOG_NO}", "${DIALOG_YES}"}
+if button returned of result = "${DIALOG_NO}" then
+    return "${DIALOG_NO}"
+else
+    if button returned of result = "${DIALOG_YES}" then
+        return "${DIALOG_YES}"
+    end if
+end if
+`
+  const shellCommand = `osascript -e '${appleScript}'`
+  const { stdout } = await exec(shellCommand)
+  const result = stdout.trim()
+
+  if (result === DIALOG_NO) {
+    throw new Error('User cancelled action.')
+  }
+}
+
+const hibernate = async () => {
+  try {
+    const shellCommand = 'pmset sleepnow'
+
+    await macDialog()
+    await exec(shellCommand)
+  } catch (err) {
+    console.log(err.message)
+  }
+}
 
 const main = async () => {
   const systemProfileStr = await getSystemProfile()
