@@ -1,5 +1,5 @@
 {
-  "name": "battery-status",
+  "name": "macos-battery-actions",
   "version": "1.0.0",
   "description": "Battery checker daemon for macOS",
   "main": "src/index.js",
