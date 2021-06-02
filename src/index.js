@@ -10,10 +10,13 @@ const ALERT_MESSAGE = 'Please consider pluggin in to power!'
 const DIALOG_MESSAGE = 'Your battery is at a critical level! Sleep?'
 const DIALOG_NO = 'No'
 const DIALOG_YES = 'Yes'
+const SYSTEM_PROFILER = '/usr/sbin/system_profiler'
+const OSASCRIPT = '/usr/bin/osascript'
+const PMSET = '/usr/bin/pmset'
 
 const getSystemProfile = async () => {
   const shellCommand =
-    'system_profiler SPPowerDataType | grep -A3 "Charge Remaining"'
+    `${SYSTEM_PROFILER} SPPowerDataType | grep -A3 "Charge Remaining"`
   const { stdout } = await exec(shellCommand)
   return stdout
 }
@@ -68,7 +71,7 @@ const parseOutput = (inputStr) => {
 
 const sendAlert = async (message = ALERT_MESSAGE, title = ALERT_TITLE) => {
   const shellCommand =
-    `osascript -e 'display notification "${message}" with title "${title}"'`
+    `${OSASCRIPT} -e 'display notification "${message}" with title "${title}"'`
     await exec(shellCommand)
 }
 
@@ -83,7 +86,7 @@ else
     end if
 end if
 `
-  const shellCommand = `osascript -e '${appleScript}'`
+  const shellCommand = `${OSASCRIPT} -e '${appleScript}'`
   const { stdout } = await exec(shellCommand)
   const result = stdout.trim()
 
@@ -94,7 +97,7 @@ end if
 
 const hibernate = async () => {
   try {
-    const shellCommand = 'pmset sleepnow'
+    const shellCommand = `${PMSET} sleepnow`
 
     await macDialog()
     await exec(shellCommand)
