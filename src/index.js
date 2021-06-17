@@ -70,21 +70,29 @@ const parseOutput = (inputStr) => {
 }
 
 const sendAlert = async (message = ALERT_MESSAGE, title = ALERT_TITLE) => {
-  const shellCommand =
-    `${OSASCRIPT} -e 'display notification "${message}" with title "${title}"'`
-    await exec(shellCommand)
+  const appleScript = `\
+tell application "Finder"
+  activate
+  display notification "${message}" with title "${title}"
+end tell
+`
+  const shellCommand = `${OSASCRIPT} -e '${appleScript}'`
+  await exec(shellCommand)
 }
 
 const macDialog = async (message = DIALOG_MESSAGE) => {
   const appleScript = `\
-display alert "${message}" buttons {"${DIALOG_NO}", "${DIALOG_YES}"}
-if button returned of result = "${DIALOG_NO}" then
-    return "${DIALOG_NO}"
-else
-    if button returned of result = "${DIALOG_YES}" then
-        return "${DIALOG_YES}"
-    end if
-end if
+tell application "Finder"
+  activate
+  display alert "${message}" buttons {"${DIALOG_NO}", "${DIALOG_YES}"}
+  if button returned of result = "${DIALOG_NO}" then
+      return "${DIALOG_NO}"
+  else
+      if button returned of result = "${DIALOG_YES}" then
+          return "${DIALOG_YES}"
+      end if
+  end if
+end tell
 `
   const shellCommand = `${OSASCRIPT} -e '${appleScript}'`
   const { stdout } = await exec(shellCommand)
