@@ -29,7 +29,7 @@ const toCamelCase = (string) =>
   `${string.charAt(0).toLowerCase()}${string.slice(1)}`
 
 const formatKey = (key) => toCamelCase(
-  key.replaceAll(' ', '').match(/([A-Za-z]+)/)[0]
+  key.split(' ').join('').match(/([A-Za-z]+)/)[0]
 )
 
 const formatValue = (value) => {
